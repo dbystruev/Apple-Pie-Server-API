@@ -1,3 +1,5 @@
+import Fluent
+import FluentSQLite
 import Vapor
 
 /// Called before your application initializes.
@@ -14,4 +16,19 @@ public func configure(
     services.register(router, as: Router.self)
 
     // Configure the rest of your application here
+    let directoryConfig = DirectoryConfig.detect()
+    services.register(directoryConfig)
+    
+    try services.register(FluentSQLiteProvider())
+    
+    var databaseConfig = DatabasesConfig()
+    let fullPath = "\(directoryConfig.workDir)words.db"
+    print(#line, #function, "Path to DB:", fullPath)
+    let db = try SQLiteDatabase(storage: .file(path: fullPath))
+    databaseConfig.add(database: db, as: .sqlite)
+    services.register(databaseConfig)
+    
+    var migrationConfig = MigrationConfig()
+    migrationConfig.add(model: Word.self, database: .sqlite)
+    services.register(migrationConfig)
 }
