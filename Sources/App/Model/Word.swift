@@ -6,7 +6,9 @@
 //
 
 import Fluent
-import FluentSQLite
+//import FluentSQLite
+//import FluentMySQL
+import FluentPostgreSQL
 import Vapor
 
 struct Word: Content {
@@ -14,5 +16,7 @@ struct Word: Content {
     var value: String
 }
 
-extension Word: SQLiteUUIDModel {}
+//extension Word: SQLiteUUIDModel {}
+//extension Word: MySQLUUIDModel {}
+extension Word: PostgreSQLUUIDModel {}
 extension Word: Migration {}

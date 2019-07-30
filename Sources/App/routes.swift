@@ -5,10 +5,12 @@ import Vapor
 ///
 /// [Learn More →](https://docs.vapor.codes/3.0/getting-started/structure/#routesswift)
 public func routes(_ router: Router) throws {
-    router.get() { req -> Future<Word> in
-        let word = Word(id: UUID(), value: "Get Value")
-
-        return Future.map(on: req) { return word }
+    router.get() { req in
+        return """
+    API:
+    — /list
+    — /create/word
+"""
     }
     
     router.get("list") { req -> Future<[Word]> in
