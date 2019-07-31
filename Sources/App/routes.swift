@@ -8,8 +8,8 @@ public func routes(_ router: Router) throws {
     router.get() { req in
         return """
     API:
-    — /list
-    — /create/word
+    — GET /list
+    — POST /create/{word}
 """
     }
     
