@@ -2,6 +2,7 @@ import Fluent
 //import FluentSQLite
 //import FluentMySQL
 import FluentPostgreSQL
+import Leaf
 import Vapor
 
 /// Called before your application initializes.
@@ -20,6 +21,9 @@ public func configure(
     // Configure the rest of your application here
     let directoryConfig = DirectoryConfig.detect()
     services.register(directoryConfig)
+    
+    try services.register(LeafProvider())
+    config.prefer(LeafRenderer.self, for: ViewRenderer.self)
     
     try services.register(FluentPostgreSQLProvider())
     
@@ -41,7 +45,7 @@ public func configure(
 //    databaseConfig.add(database: mysql, as: .mysql)
 //    services.register(databaseConfig)
     
-    let config = PostgreSQLDatabaseConfig(hostname: "mysql", port: 5432, username: "postgres", database: nil, password: "postgrespassword1", transport: .cleartext)
+    let config = PostgreSQLDatabaseConfig(hostname: "postgres", port: 5432, username: "postgres", database: nil, password: "postgrespassword1", transport: .cleartext)
     let postgresql = PostgreSQLDatabase(config: config)
     
     var databasesConfig = DatabasesConfig()
@@ -49,6 +53,7 @@ public func configure(
     services.register(databasesConfig)
     
     var migrationConfig = MigrationConfig()
+    migrationConfig.add(model: Category.self, database: .psql)
     migrationConfig.add(model: Word.self, database: .psql)
     services.register(migrationConfig)
 }

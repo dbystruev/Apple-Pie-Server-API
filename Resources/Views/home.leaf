@@ -1,0 +1,19 @@
+#set("title") { Home }
+
+#set("body") {
+    <h1>Apple Pie Category List</h1>
+
+    #if(username) {
+        <div>Добро пожаловать, #(username)!</div>
+
+        <ul>
+            #for(category in categories) {
+                <li><a href="category/#(category.id)">#(category.name)</a></li>
+            }
+        </ul>
+    } else {
+        <a href="users/login">Пожалуйста, залогиньтесь.</a>
+    }
+}
+
+#embed("master")
