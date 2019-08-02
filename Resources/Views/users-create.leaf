@@ -1,0 +1,12 @@
+#set("title") { Создать пользователя }
+
+#set("body") {
+    <h1>Создание пользователя</h1>
+    <form method="POST">
+        <div>Имя: <input type="text" name="username" /></div>
+        <div>Пароль: <input type="password" name="password"/></div>
+        <div><input type="submit" class="btn btn-lg btn-primary" /></div>
+    </form>
+}
+
+#embed("master")

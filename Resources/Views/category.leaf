@@ -1,0 +1,19 @@
+#set("body") {
+    <h1>#(category.name)</h1>
+
+    #if(words) {
+        <ul>
+            #for(word in words) {
+            <li>#(word.title) — добавил пользователь: #(word.user), дата: #date(word.date, "HH:mm EEEE, MMM d, yyyy")</li>
+            }
+        </ul>
+    }
+
+    <form method="POST">
+        <h3>Добавить новое слово</h3>
+        <div><input name="title" type="text" class="form-control" placeholder="Добавьте слово" /></div>
+        <div><button type="submit" class="btn btn-lg btn-primary">Добавить</button></div>
+    </form>
+}
+
+#embed("master")
