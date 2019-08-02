@@ -54,6 +54,8 @@ public func configure(
     
     var migrationConfig = MigrationConfig()
     migrationConfig.add(model: Category.self, database: .psql)
+    migrationConfig.add(model: CategoryWord.self, database: .psql)
+    migrationConfig.add(model: User.self, database: .psql)
     migrationConfig.add(model: Word.self, database: .psql)
     services.register(migrationConfig)
 }
