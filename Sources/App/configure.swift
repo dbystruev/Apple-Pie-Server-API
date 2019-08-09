@@ -45,8 +45,8 @@ public func configure(
 //    databaseConfig.add(database: mysql, as: .mysql)
 //    services.register(databaseConfig)
     
-    let config = PostgreSQLDatabaseConfig(hostname: "postgres", port: 5432, username: "postgres", database: nil, password: "postgrespassword1", transport: .cleartext)
-    let postgresql = PostgreSQLDatabase(config: config)
+    let postgresConfig = PostgreSQLDatabaseConfig(hostname: "postgres", port: 5432, username: "postgres", database: nil, password: "postgrespassword1", transport: .cleartext)
+    let postgresql = PostgreSQLDatabase(config: postgresConfig)
     
     var databasesConfig = DatabasesConfig()
     databasesConfig.add(database: postgresql, as: .psql)
@@ -58,4 +58,9 @@ public func configure(
     migrationConfig.add(model: User.self, database: .psql)
     migrationConfig.add(model: Word.self, database: .psql)
     services.register(migrationConfig)
+    
+    var middlewareConfig = MiddlewareConfig.default()
+    middlewareConfig.use(SessionsMiddleware.self)
+    services.register(middlewareConfig)
+    config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
 }

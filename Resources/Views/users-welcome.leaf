@@ -1,0 +1,13 @@
+#set("title") {Добро пожаловать!}
+
+#set("body") {
+    #if(username) {
+        <h1>Добро пожаловать, #(username)!</h1>
+    } else {
+        <h1>Добро пожаловать!</h1>
+    }
+
+    <a href="/">Home</a>
+}
+
+#embed("master")

@@ -1,3 +1,4 @@
+import Crypto
 import Fluent
 import FluentPostgreSQL
 import Leaf
@@ -8,6 +9,17 @@ import Vapor
 ///
 /// [Learn More →](https://docs.vapor.codes/3.0/getting-started/structure/#routesswift)
 public func routes(_ router: Router) throws {
+    // MARK: - GET /list
+    router.get("list") { req -> Future<[Word]> in
+        return Word.query(on: req).all()
+    }
+    
+    // MARK: POST /create -
+    router.post(Word.self, at: "create") { req, word -> Future<Word> in
+        return word.save(on: req)
+    }
+    
+    // MARK: - GET /
     router.get() { req -> Future<View> in
         struct HomeContext: Codable {
             var username: String?
@@ -19,11 +31,8 @@ public func routes(_ router: Router) throws {
             return try req.view().render("home", context)
         }
     }
-
-    router.post(Word.self, at: "create") { req, word -> Future<Word> in
-        return word.save(on: req)
-    }
     
+    // MARK: GET /category
     router.get("category", Int.parameter) { req -> Future<View> in
         struct CategoryContext: Codable {
             var username: String?
@@ -53,10 +62,7 @@ public func routes(_ router: Router) throws {
         }
     }
     
-    router.get("list") { req -> Future<[Word]> in
-        return Word.query(on: req).all()
-    }
-    
+    // MARK: GET /setup
     router.get("setup") { req -> String in
 //        let categories = [
 //            Category(id: 1, name: "Фрукты"),
@@ -87,11 +93,66 @@ public func routes(_ router: Router) throws {
         return "Database setup OK"
     }
     
+    // MARK: GET /users/create
     router.get("users", "create") { req -> Future<View> in
         return try req.view().render("users-create")
+    }
+    
+    // MARK: GET /users/login
+    router.get("users", "login") { req -> Future<View> in
+        return try req.view().render("users-login")
+    }
+    
+    // MARK: GET /users/logout
+    router.get("users", "logout") { req -> Future<View> in
+        let session = try req.session()
+        session["username"] = nil
+        return try req.view().render("users-logout")
+    }
+    
+    // MARK: POST /user/create
+    router.post("users", "create") { req -> Future<View> in
+        var user = try req.content.syncDecode(User.self)
+        
+        return User.query(on: req)
+            .filter(\.username == user.username)
+            .first()
+            .flatMap(to: View.self) { existing in
+                if existing == nil {
+                    user.password = try BCrypt.hash(user.password)
+                    
+                    return user.save(on: req).flatMap(to: View.self) { user in
+                        return try req.view().render("users-welcome")
+                    }
+                } else {
+                    let context = ["error": "true"]
+                    return try req.view().render("users-create", context)
+                }
+            }
+    }
+    
+    // MARK: POST /user/login
+    router.post(User.self, at: "users", "login") { req, user -> Future<View> in
+        return User.query(on: req)
+            .filter(\.username == user.username)
+            .first()
+            .flatMap(to: View.self) { existing in
+                if let existing = existing {
+                    if try BCrypt.verify(user.password, created: existing.password) {
+                        let session = try req.session()
+                        session["username"] = existing.username
+                        let context = ["username": existing.username]
+                        return try req.view().render("users-welcome", context)
+                    }
+                }
+                
+                let context = ["error": "true"]
+                return try req.view().render("users-login", context)
+        }
     }
 }
 
 func getUsername(_ req: Request) -> String? {
-    return "Fake user"
+    let session = try? req.session()
+    return session?["username"]
 }

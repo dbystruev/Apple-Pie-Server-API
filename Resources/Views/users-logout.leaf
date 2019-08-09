@@ -1,0 +1,10 @@
+#set("title") {Log out}
+
+#set("body") {
+    <h1>Вы закрыли сессию</h1>
+
+    <a href="/">Home</a>
+}
+
+#embed("master")
+

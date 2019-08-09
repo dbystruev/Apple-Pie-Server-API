@@ -1,9 +1,9 @@
-#set("title") { Создать пользователя }
+#set("title") {Авторизация}
 
 #set("body") {
-    <h1>Создание пользователя</h1>
+    <h1>Авторизация</h1>
     #if(error) {
-        <div>Такой пользователь уже существует</div>
+        <div>Ошибка имени или пароля</div>
     }
     <form method="POST">
         <div>Имя: <input type="text" name="username" /></div>
