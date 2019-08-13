@@ -15,6 +15,23 @@ public func routes(_ router: Router) throws {
         return Category.query(on: req).all()
     }
 
+    // MARK: - GET /words/<category-id>
+    router.get("words", Int.parameter) { req -> Future<[CategoryWord]> in
+        // get category ID
+        let categoryID = try req.parameters.next(Int.self)
+
+        // find category in database
+        return Category.find(categoryID, on: req).flatMap(to: [CategoryWord].self) { category in
+            guard let category = category else {
+                throw Abort(.notFound)
+            }
+
+            return CategoryWord.query(on: req)
+                .filter(\.category == category.id!)
+                .all()
+        }
+    }
+
     // MARK: - GET /list
     router.get("list") { req -> Future<[Word]> in
         return Word.query(on: req).all()
@@ -39,7 +56,7 @@ public func routes(_ router: Router) throws {
         }
     }
     
-    // MARK: GET /category
+    // MARK: GET /category/<category-id>
     router.get("category", Int.parameter) { req -> Future<View> in
         struct CategoryContext: Codable {
             var username: String?
